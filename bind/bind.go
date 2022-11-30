@@ -2,6 +2,12 @@
 //
 // Configurable middleware wrapper around ctx.Bind.
 // Allows the target struct and middleware behaviour to be defined in a single handler, and if successful attaches the result to the gin context.
+//
+// By default, any errors are silently ignored and the handler chain is not interrupted.
+// This behaviour can be overridden globally for all requests, and locally within each handler to either:
+//   - Abort request and set ctx.Error() for deferred handling in a higher level error middleware
+//   - Abort request and send a 400 error
+//   - Abort request and send a 400 error with specific validation error detail
 package bind
 
 import (

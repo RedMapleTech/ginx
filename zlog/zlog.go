@@ -1,6 +1,9 @@
 // Zerolog middleware
 //
 // Adds request/response logging middleware, and adds the logger to the underlying context.
+//
+// Warning: zerolog.SetGlobalLevel will override all log level settings in this package.
+// This should usually be left unset (Trace), and the default level specified in Logger().
 package zlog
 
 import (
