@@ -17,8 +17,8 @@ func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339})
 
 	// Configure zlog global settings
-	zlog.RequestLevel = zerolog.TraceLevel
-	zlog.ResponseLevel = zerolog.InfoLevel
+	zlog.SetGlobalRequestLevel(zerolog.TraceLevel)
+	zlog.SetGlobalResponseLevel(zerolog.InfoLevel)
 
 	// New gin engine
 	e := gin.New()

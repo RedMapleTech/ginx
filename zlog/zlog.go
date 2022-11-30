@@ -17,12 +17,13 @@ import (
 )
 
 var (
-	RequestLevel  = zerolog.TraceLevel
-	ResponseLevel = zerolog.DebugLevel
+	globalRequestLevel  = zerolog.TraceLevel
+	globalResponseLevel = zerolog.DebugLevel
 )
 
-type LoggerKey struct{}
+type loggerKey struct{}
 
+// Logger middleare
 func Logger(lvl zerolog.Level) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Start tracking request duration
@@ -39,7 +40,7 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		setLogger(c, &logger)
 
 		// Log request start
-		logger.WithLevel(RequestLevel).
+		logger.WithLevel(globalRequestLevel).
 			Str("method", c.Request.Method).
 			Str("origin", c.GetHeader("Origin")).
 			Str("path", c.Request.URL.Path).
@@ -53,7 +54,7 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		elapsed := time.Since(start)
 
 		// Log response
-		GetLogger(c).WithLevel(ResponseLevel).
+		GetLogger(c).WithLevel(globalResponseLevel).
 			Str("method", c.Request.Method).
 			Str("request", c.Request.URL.Path).
 			Str("ip", c.ClientIP()).
@@ -64,17 +65,19 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 	}
 }
 
+// GetLogger returns the attached logger from the context, or the global logger if not set
 func GetLogger(ctx context.Context) *zerolog.Logger {
 	ictx := ctx
 	if gctx, ok := ctx.(*gin.Context); ok {
 		ictx = gctx.Request.Context()
 	}
-	if logger := ictx.Value(LoggerKey{}); logger != nil {
+	if logger := ictx.Value(loggerKey{}); logger != nil {
 		return logger.(*zerolog.Logger)
 	}
 	return &log.Logger
 }
 
+// SetLevel sets the log level for the logger attached to the context of the current handler
 func SetLevel(lvl zerolog.Level) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		logger := GetLogger(ctx).Level(lvl)
@@ -82,6 +85,16 @@ func SetLevel(lvl zerolog.Level) gin.HandlerFunc {
 	}
 }
 
+// SetGlobalRequestLevel sets the log level for the REQ http trace log line
+func SetGlobalRequestLevel(lvl zerolog.Level) {
+	globalRequestLevel = lvl
+}
+
+// SetGlobalResponseLevel sets the log level for the RES http trace log line
+func SetGlobalResponseLevel(lvl zerolog.Level) {
+	globalResponseLevel = lvl
+}
+
 func setLogger(c *gin.Context, logger *zerolog.Logger) {
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), LoggerKey{}, logger))
+	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), loggerKey{}, logger))
 }

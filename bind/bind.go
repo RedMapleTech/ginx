@@ -17,11 +17,11 @@ import (
 )
 
 var (
-	Key      = "body"
-	Abort    = false
-	Response = false
-	Detail   = false
-	Code     = http.StatusBadRequest
+	defaultKey      = "body"
+	defaultAbort    = false
+	defaultResponse = false
+	defaultDetail   = false
+	defaultCode     = http.StatusBadRequest
 )
 
 type bindOpts struct {
@@ -32,6 +32,7 @@ type bindOpts struct {
 	code     int    // HTTP status code if sending a response
 }
 
+// Modifier function for customising bind handler behaviour
 type BindOpts func(*bindOpts) *bindOpts
 
 // As binds the body or query into an instance of the struct pointer returned by pv
@@ -129,14 +130,15 @@ func getBindOpts(opts ...BindOpts) *bindOpts {
 
 func defaultBindOpts() *bindOpts {
 	return &bindOpts{
-		key:      Key,
-		abort:    Abort,
-		response: Response,
-		detail:   Detail,
-		code:     Code,
+		key:      defaultKey,
+		abort:    defaultAbort,
+		response: defaultResponse,
+		detail:   defaultDetail,
+		code:     defaultCode,
 	}
 }
 
+// WithKey sets the context key to attach the unmarshalled struct for the current handler
 func WithKey(key string) BindOpts {
 	return func(bo *bindOpts) *bindOpts {
 		bo.key = key
@@ -144,6 +146,12 @@ func WithKey(key string) BindOpts {
 	}
 }
 
+// SetDefaultKey sets the default context key to attach the unmarshalled struct for all handlers
+func SetDefaultKey(key string) {
+	defaultKey = key
+}
+
+// WithAbort sets the middleware to abort on error for the current handler
 func WithAbort() BindOpts {
 	return func(bo *bindOpts) *bindOpts {
 		bo.abort = true
@@ -151,6 +159,12 @@ func WithAbort() BindOpts {
 	}
 }
 
+// SetDefaultAbort sets the default abort on error behaviour for all handlers
+func SetDefaultAbort(abort bool) {
+	defaultAbort = abort
+}
+
+// WithResponse sets the middleware to send error responses for the current handler
 func WithResponse() BindOpts {
 	return func(bo *bindOpts) *bindOpts {
 		bo.response = true
@@ -158,6 +172,12 @@ func WithResponse() BindOpts {
 	}
 }
 
+// SetDefaultResponse sets the default error response behaviour for all handlers
+func SetDefaultResponse(response bool) {
+	defaultResponse = response
+}
+
+// WithResponseCode sets the middleware to send error responses with a custom status code for the current handler
 func WithResponseCode(code int) BindOpts {
 	return func(bo *bindOpts) *bindOpts {
 		bo.response = true
@@ -166,10 +186,21 @@ func WithResponseCode(code int) BindOpts {
 	}
 }
 
+// SetDefaultCode sets the default error response status code for all handlers
+func SetDefaultCode(code int) {
+	defaultCode = code
+}
+
+// WithResponseDetail sets the middleware to send error responses with detail field for the current handler
 func WithResponseDetail() BindOpts {
 	return func(bo *bindOpts) *bindOpts {
 		bo.response = true
 		bo.detail = true
 		return bo
 	}
+}
+
+// SetDefaultDetail sets the default error response detail field behaviour for all handlers
+func SetDefaultDetail(detail bool) {
+	defaultDetail = detail
 }
