@@ -39,7 +39,11 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		c.Header("X-Request-ID", requestID)
 
 		// Create a sublogger at the specified level to carry through the request chain
-		logger := log.With().Str("id", requestID).Logger().Level(lvl)
+		logger := log.With().
+			Str("id", requestID).
+			Str("agent", c.GetHeader("User-Agent")).
+			Logger().
+			Level(lvl)
 		setLogger(c, &logger)
 
 		// Log request start
