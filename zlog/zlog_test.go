@@ -41,8 +41,10 @@ func TestLogRequest(t *testing.T) {
 	assert.Equal(t, 3, len(lines))
 	assert.Contains(t, lines[0], "TRC REQ GET /")
 	assert.Contains(t, lines[0], id)
+	assert.Contains(t, lines[0], "path=/")
 	assert.Contains(t, lines[1], "DBG RES GET /")
 	assert.Contains(t, lines[1], id)
+	assert.Contains(t, lines[0], "path=/")
 }
 
 func TestLogExtra(t *testing.T) {
@@ -72,6 +74,7 @@ func TestLogExtra(t *testing.T) {
 	assert.Equal(t, 2, len(lines))
 	assert.Contains(t, lines[0], "WRN TEST")
 	assert.Contains(t, lines[0], id)
+	assert.Contains(t, lines[0], "path=/")
 }
 
 func TestLogChangeRequestLevel(t *testing.T) {

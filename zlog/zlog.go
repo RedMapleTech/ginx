@@ -42,6 +42,7 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		logger := log.With().
 			Str("id", requestID).
 			Str("agent", c.GetHeader("User-Agent")).
+			Str("path", c.Request.URL.Path).
 			Logger().
 			Level(lvl)
 		setLogger(c, &logger)
@@ -50,7 +51,6 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		logger.WithLevel(globalRequestLevel).
 			Str("method", c.Request.Method).
 			Str("origin", c.GetHeader("Origin")).
-			Str("path", c.Request.URL.Path).
 			Str("ip", c.ClientIP()).
 			Msg(fmt.Sprintf("REQ %s %s %s", c.Request.Method, c.Request.URL.Path, c.ClientIP()))
 
