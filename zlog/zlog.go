@@ -63,7 +63,6 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		// Log response
 		GetLogger(c).WithLevel(globalResponseLevel).
 			Str("method", c.Request.Method).
-			Str("request", c.Request.URL.Path).
 			Str("ip", c.ClientIP()).
 			Int("response", c.Writer.Status()).
 			Int("bytes", c.Writer.Size()).
