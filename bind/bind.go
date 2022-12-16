@@ -158,9 +158,9 @@ func SetDefaultKey(key string) {
 }
 
 // WithAbort sets the middleware to abort on error for the current handler
-func WithAbort() BindOpts {
+func WithAbort(abort bool) BindOpts {
 	return func(bo *bindOpts) *bindOpts {
-		bo.abort = true
+		bo.abort = abort
 		return bo
 	}
 }
@@ -171,9 +171,9 @@ func SetDefaultAbort(abort bool) {
 }
 
 // WithResponse sets the middleware to send error responses for the current handler
-func WithResponse() BindOpts {
+func WithResponse(response bool) BindOpts {
 	return func(bo *bindOpts) *bindOpts {
-		bo.response = true
+		bo.response = response
 		return bo
 	}
 }
@@ -183,8 +183,8 @@ func SetDefaultResponse(response bool) {
 	defaultResponse = response
 }
 
-// WithResponseCode sets the middleware to send error responses with a custom status code for the current handler
-func WithResponseCode(code int) BindOpts {
+// WithCode sets the middleware to send error responses with a custom status code for the current handler
+func WithCode(code int) BindOpts {
 	return func(bo *bindOpts) *bindOpts {
 		bo.response = true
 		bo.code = code
@@ -197,11 +197,14 @@ func SetDefaultCode(code int) {
 	defaultCode = code
 }
 
-// WithResponseDetail sets the middleware to send error responses with detail field for the current handler
-func WithResponseDetail() BindOpts {
+// WithDetail sets the middleware to send error detail field for the current handler.
+// Also sets response if true.
+func WithDetail(detail bool) BindOpts {
 	return func(bo *bindOpts) *bindOpts {
-		bo.response = true
-		bo.detail = true
+		bo.detail = detail
+		if detail {
+			bo.response = true
+		}
 		return bo
 	}
 }

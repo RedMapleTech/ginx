@@ -2,7 +2,9 @@ package zlog
 
 import (
 	"bytes"
+	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -103,4 +105,21 @@ func TestLogChangeRequestLevel(t *testing.T) {
 	assert.Contains(t, lines[0], id)
 	assert.Contains(t, lines[1], "DBG RES GET /")
 	assert.Contains(t, lines[1], id)
+}
+
+func TestGetLogger(t *testing.T) {
+	logger := zerolog.New(io.Discard)
+	ctx := WithLogger(context.Background(), &logger)
+
+	res := GetLogger(ctx)
+
+	assert.Same(t, &logger, res)
+}
+
+func TestGetLoggerNotSet(t *testing.T) {
+	ctx := context.Background()
+
+	res := GetLogger(ctx)
+
+	assert.Same(t, &log.Logger, res)
 }

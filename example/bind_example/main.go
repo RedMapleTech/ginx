@@ -27,13 +27,13 @@ func main() {
 	e := gin.New()
 
 	// Use bind.As with a provider func to set default values for query string
-	e.GET("", bind.As(NewTestRequestQuery, bind.WithKey("query"), bind.WithResponseDetail()), func(ctx *gin.Context) {
+	e.GET("", bind.As(NewTestRequestQuery, bind.WithKey("query"), bind.WithDetail(true)), func(ctx *gin.Context) {
 		qry := ctx.MustGet("query").(*TestRequestQuery)
 		ctx.JSON(http.StatusOK, qry)
 	})
 
 	// Use bind.To with a struct (make sure to set request Content-Type)
-	e.POST("", bind.To(TestRequestBody{}, bind.WithResponseDetail()), func(ctx *gin.Context) {
+	e.POST("", bind.To(TestRequestBody{}, bind.WithDetail(true)), func(ctx *gin.Context) {
 		qry := ctx.MustGet("body").(*TestRequestBody)
 		ctx.JSON(http.StatusOK, gin.H{
 			"body": qry,

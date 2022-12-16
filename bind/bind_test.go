@@ -118,7 +118,7 @@ func TestBindEmptyResponse(t *testing.T) {
 	e := gin.New()
 	bodyType := TestingBody{}
 
-	e.POST("", To(bodyType, WithResponse()))
+	e.POST("", To(bodyType, WithResponse(true)))
 
 	req, _ := http.NewRequest("POST", "/", nil)
 	e.ServeHTTP(w, req)
@@ -141,7 +141,7 @@ func TestBindAbort(t *testing.T) {
 		ctx.Next()
 		assert.True(t, ctx.IsAborted())
 		assert.NotEmpty(t, ctx.Errors)
-	}, To(TestingBody{}, WithAbort()))
+	}, To(TestingBody{}, WithAbort(true)))
 
 	req, _ := http.NewRequest("POST", "/", nil)
 	e.ServeHTTP(w, req)
@@ -153,7 +153,7 @@ func TestBindResponse(t *testing.T) {
 	w := httptest.NewRecorder()
 	e := gin.New()
 
-	e.POST("", To(TestingBody{}, WithResponse()))
+	e.POST("", To(TestingBody{}, WithResponse(true)))
 
 	req, _ := http.NewRequest("POST", "/", nil)
 	e.ServeHTTP(w, req)
@@ -165,7 +165,7 @@ func TestBindResponseCode(t *testing.T) {
 	w := httptest.NewRecorder()
 	e := gin.New()
 
-	e.POST("", To(TestingBody{}, WithResponseCode(http.StatusForbidden)))
+	e.POST("", To(TestingBody{}, WithCode(http.StatusForbidden)))
 
 	req, _ := http.NewRequest("POST", "/", nil)
 	e.ServeHTTP(w, req)
@@ -181,7 +181,7 @@ func TestBindResponseDetail(t *testing.T) {
 	w := httptest.NewRecorder()
 	e := gin.New()
 
-	e.POST("", To(validatedBody{}, WithResponseDetail()))
+	e.POST("", To(validatedBody{}, WithDetail(true)))
 
 	req, _ := http.NewRequest("POST", "/", body(map[string]string{
 		"id": "not_a_uuid",

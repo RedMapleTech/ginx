@@ -88,6 +88,11 @@ func SetLevel(lvl zerolog.Level) gin.HandlerFunc {
 	}
 }
 
+// WithLogger adds a logger to a context
+func WithLogger(parent context.Context, logger *zerolog.Logger) context.Context {
+	return context.WithValue(parent, loggerKey{}, logger)
+}
+
 // SetGlobalRequestLevel sets the log level for the REQ http trace log line
 func SetGlobalRequestLevel(lvl zerolog.Level) {
 	globalRequestLevel = lvl
@@ -99,5 +104,5 @@ func SetGlobalResponseLevel(lvl zerolog.Level) {
 }
 
 func setLogger(c *gin.Context, logger *zerolog.Logger) {
-	c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), loggerKey{}, logger))
+	c.Request = c.Request.WithContext(WithLogger(c.Request.Context(), logger))
 }
