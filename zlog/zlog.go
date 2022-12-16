@@ -39,14 +39,18 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		c.Header("X-Request-ID", requestID)
 
 		// Create a sublogger at the specified level to carry through the request chain
-		logger := log.With().Str("id", requestID).Logger().Level(lvl)
+		logger := log.With().
+			Str("id", requestID).
+			Str("agent", c.GetHeader("User-Agent")).
+			Str("path", c.Request.URL.Path).
+			Logger().
+			Level(lvl)
 		setLogger(c, &logger)
 
 		// Log request start
 		logger.WithLevel(globalRequestLevel).
 			Str("method", c.Request.Method).
 			Str("origin", c.GetHeader("Origin")).
-			Str("path", c.Request.URL.Path).
 			Str("ip", c.ClientIP()).
 			Msg(fmt.Sprintf("REQ %s %s %s", c.Request.Method, c.Request.URL.Path, c.ClientIP()))
 
@@ -59,7 +63,6 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 		// Log response
 		GetLogger(c).WithLevel(globalResponseLevel).
 			Str("method", c.Request.Method).
-			Str("request", c.Request.URL.Path).
 			Str("ip", c.ClientIP()).
 			Int("response", c.Writer.Status()).
 			Int("bytes", c.Writer.Size()).
