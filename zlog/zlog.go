@@ -74,7 +74,7 @@ func Logger(lvl zerolog.Level) gin.HandlerFunc {
 // GetLogger returns the attached logger from the context, or the global logger if not set
 func GetLogger(ctx context.Context) *zerolog.Logger {
 	ictx := ctx
-	if gctx, ok := ctx.(*gin.Context); ok {
+	if gctx, ok := ctx.(*gin.Context); ok && gctx.Request != nil {
 		ictx = gctx.Request.Context()
 	}
 	if logger := ictx.Value(loggerKey{}); logger != nil {
