@@ -1,0 +1,15 @@
+name: Pull Request
+
+on:
+  pull_request:
+    branches: [main, develop]
+  merge_group: {}
+
+jobs:
+  call-golang-vet-staticcheck:
+    name: Go Vet and Staticcheck
+    uses: RedMapleTech/actions/.github/workflows/golang-vet-staticcheck.yml@main
+
+  call-golang-test:
+    name: Go Tests
+    uses: RedMapleTech/actions/.github/workflows/golang-test.yml@main
