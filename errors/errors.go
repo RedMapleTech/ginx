@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/richjyoung/wtf"
 )
 
 var (
@@ -28,7 +29,7 @@ func AbortWithError(ctx *gin.Context, err error, status int, code string) bool {
 	if err != nil {
 		body := gin.H{"code": code}
 		if detail && !errors.Is(err, ErrNoDetail) {
-			body["error"] = err.Error()
+			body["error"] = wtf.IsThisError(err)
 		}
 		ctx.AbortWithStatusJSON(status, body)
 		return true
