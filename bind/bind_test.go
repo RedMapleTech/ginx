@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -191,6 +192,24 @@ func TestBindResponseDetail(t *testing.T) {
 	e.ServeHTTP(w, req)
 	assert.Equal(t, 400, w.Result().StatusCode)
 	assert.Equal(t, `{"code":"validation_error","errors":[{"field":"ID","rule":"uuid4"}]}`, w.Body.String())
+}
+
+func TestBindResponseDetailNotValidation(t *testing.T) {
+	type validatedBody struct {
+		ID string `json:"id" binding:"required,uuid4"`
+	}
+
+	w := httptest.NewRecorder()
+	e := gin.New()
+
+	e.POST("", To(validatedBody{}, WithDetail(true)))
+
+	req, _ := http.NewRequest("POST", "/", strings.NewReader(`{"id": "invalid_json`))
+	req.Header.Set("Content-Type", "application/json")
+
+	e.ServeHTTP(w, req)
+	assert.Equal(t, 400, w.Result().StatusCode)
+	assert.Equal(t, `{"code":"binding_error","error":"unexpected EOF"}`, w.Body.String())
 }
 
 func body(i interface{}) io.Reader {

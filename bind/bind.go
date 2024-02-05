@@ -34,7 +34,7 @@ type bindOpts struct {
 	key      string // Context key
 	abort    bool   // Abort request on a bind error and set ctx.Error
 	response bool   // Abort request and send response immediately
-	detail   bool   // Send validation error detail as JSON in response
+	detail   bool   // Send error detail as JSON in response
 	code     int    // HTTP status code if sending a response
 }
 
@@ -108,8 +108,14 @@ func bindHandler(ctx *gin.Context, target interface{}, opts *bindOpts) {
 					"errors": errs,
 				}
 				ctx.AbortWithStatusJSON(opts.code, res)
+			} else if opts.detail {
+				// Not a validation error but detail still requested
+				ctx.AbortWithStatusJSON(opts.code, gin.H{
+					"code":  "binding_error",
+					"error": err.Error(),
+				})
 			} else {
-				// Error other than validation error
+				// Error other than validation error or detail response disabled
 				ctx.AbortWithStatus(opts.code)
 			}
 			return
